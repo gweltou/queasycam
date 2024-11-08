@@ -33,7 +33,9 @@ import java.awt.Robot;
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import processing.core.*;
+import processing.core.PConstants;
 import processing.event.KeyEvent;
+import processing.opengl.PGraphicsOpenGL;
 
 public class QueasyCam {
 	public final static String VERSION = "##library.prettyVersion##";
@@ -84,26 +86,7 @@ public class QueasyCam {
 	}
     
     public QueasyCam(PApplet applet, float near, float far){
-        this.applet = applet;
-        applet.registerMethod("draw", this);
-        applet.registerMethod("keyEvent", this);
-        
-        try {
-            robot = new Robot();
-        } catch (Exception e){}
-        
-        controllable = true;
-        speed = 3f;
-        sensitivity = 2f;
-        position = new PVector(0f, 0f, 0f);
-        up = new PVector(0f, 1f, 0f);
-        right = new PVector(1f, 0f, 0f);
-        forward = new PVector(0f, 0f, 1f);
-        velocity = new PVector(0f, 0f, 0f);
-        pan = 0f;
-        tilt = 0f;
-        friction = 0.75f;
-        keys = new HashMap<Character, Boolean>();
+        this(applet);
         
         applet.perspective(PConstants.PI/3f, (float)applet.width/(float)applet.height, near, far);
     }
@@ -180,19 +163,32 @@ public class QueasyCam {
 				break;
 		}
 	}
-    
+
+	private boolean pushedLights = false;
+
     public void beginHUD()
-    {
-        g.pushMatrix();
-        g.hint(DISABLE_DEPTH_TEST);
-        g.resetMatrix();
-        g.applyMatrix(originalMatrix);
+	{
+		applet.g.hint(PConstants.DISABLE_DEPTH_TEST);
+		applet.g.pushMatrix();
+		applet.g.resetMatrix();
+		if (applet.g.isGL() && applet.g.is3D()) {
+			PGraphicsOpenGL pgl = (PGraphicsOpenGL) applet.g;
+			pushedLights = pgl.lights;
+			pgl.lights = false;
+			pgl.pushProjection();
+			applet.g.ortho(0, applet.g.width, -applet.g.height, 0, -Float.MAX_VALUE, +Float.MAX_VALUE);
+		}
     }
     
     public void endHUD()
     {
-        g.hint(ENABLE_DEPTH_TEST);
-        g.popMatrix();
+		if (applet.g.isGL() && applet.g.is3D()) {
+			PGraphicsOpenGL pgl = (PGraphicsOpenGL) applet.g;
+			pgl.popProjection();
+			pgl.lights = pushedLights;
+		}
+		applet.g.popMatrix();
+		applet.g.hint(PConstants.ENABLE_DEPTH_TEST);
     }
 	
 	private float clamp(float x, float min, float max){
