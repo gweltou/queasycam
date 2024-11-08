@@ -48,8 +48,14 @@ public class QueasyCam {
 	public float tilt;
 	public PVector velocity;
 	public float friction;
+	public char key_forward = 'w';
+	public char key_backward = 's';
+	public char key_left = 'a';
+	public char key_right = 'd';
+	public char key_up = 'q';
+	public char key_down = 'e';
 
-	private PApplet applet;
+	private final PApplet applet;
 	private Robot robot;
 	private PVector center;
 	private PVector up;
@@ -58,7 +64,7 @@ public class QueasyCam {
     private PVector target;
 	private Point mouse;
 	private Point prevMouse;
-	private HashMap<Character, Boolean> keys;
+	private final HashMap<Character, Boolean> keys;
 
 	public QueasyCam(PApplet applet){
 		this.applet = applet;
@@ -138,12 +144,12 @@ public class QueasyCam {
 		
 		prevMouse = new Point(mouse.x, mouse.y);
 		
-		if (keys.containsKey('a') && keys.get('a')) velocity.add(PVector.mult(right, speed));
-		if (keys.containsKey('d') && keys.get('d')) velocity.sub(PVector.mult(right, speed));
-		if (keys.containsKey('w') && keys.get('w')) velocity.add(PVector.mult(forward, speed));
-		if (keys.containsKey('s') && keys.get('s')) velocity.sub(PVector.mult(forward, speed));
-		if (keys.containsKey('q') && keys.get('q')) velocity.add(PVector.mult(up, speed));
-		if (keys.containsKey('e') && keys.get('e')) velocity.sub(PVector.mult(up, speed));
+		if (keys.containsKey(key_left) && keys.get(key_left)) velocity.add(PVector.mult(right, speed));
+		if (keys.containsKey(key_right) && keys.get(key_right)) velocity.sub(PVector.mult(right, speed));
+		if (keys.containsKey(key_forward) && keys.get(key_forward)) velocity.add(PVector.mult(forward, speed));
+		if (keys.containsKey(key_backward) && keys.get(key_backward)) velocity.sub(PVector.mult(forward, speed));
+		if (keys.containsKey(key_up) && keys.get(key_up)) velocity.add(PVector.mult(up, speed));
+		if (keys.containsKey(key_down) && keys.get(key_down)) velocity.sub(PVector.mult(up, speed));
 
 		velocity.mult(friction);
 		position.add(velocity);
@@ -166,8 +172,7 @@ public class QueasyCam {
 
 	private boolean pushedLights = false;
 
-    public void beginHUD()
-	{
+    public void beginHUD(){
 		applet.g.hint(PConstants.DISABLE_DEPTH_TEST);
 		applet.g.pushMatrix();
 		applet.g.resetMatrix();
@@ -180,8 +185,7 @@ public class QueasyCam {
 		}
     }
     
-    public void endHUD()
-    {
+    public void endHUD(){
 		if (applet.g.isGL() && applet.g.is3D()) {
 			PGraphicsOpenGL pgl = (PGraphicsOpenGL) applet.g;
 			pgl.popProjection();
