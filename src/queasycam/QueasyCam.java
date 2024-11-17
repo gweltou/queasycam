@@ -90,12 +90,21 @@ public class QueasyCam {
 
 		applet.perspective(PConstants.PI/3f, (float)applet.width/(float)applet.height, 0.01f, 1000f);
 	}
+
+	public QueasyCam(PApplet applet, float fov){
+		this(applet);
+		applet.perspective(fov, (float)applet.width/(float)applet.height, 0.01f, 1000f);
+	}
     
     public QueasyCam(PApplet applet, float near, float far){
         this(applet);
-        
         applet.perspective(PConstants.PI/3f, (float)applet.width/(float)applet.height, near, far);
     }
+
+	public QueasyCam(PApplet applet, float fov, float near, float far){
+		this(applet);
+		applet.perspective(fov, (float)applet.width/(float)applet.height, near, far);
+	}
 
 	public void draw(){
 		if (!controllable) return;
@@ -148,8 +157,8 @@ public class QueasyCam {
 		if (keys.containsKey(key_right) && keys.get(key_right)) velocity.sub(PVector.mult(right, speed));
 		if (keys.containsKey(key_forward) && keys.get(key_forward)) velocity.add(PVector.mult(forward, speed));
 		if (keys.containsKey(key_backward) && keys.get(key_backward)) velocity.sub(PVector.mult(forward, speed));
-		if (keys.containsKey(key_up) && keys.get(key_up)) velocity.add(PVector.mult(up, speed));
-		if (keys.containsKey(key_down) && keys.get(key_down)) velocity.sub(PVector.mult(up, speed));
+		if (keys.containsKey(key_down) && keys.get(key_down)) velocity.add(PVector.mult(up, speed));
+		if (keys.containsKey(key_up) && keys.get(key_up)) velocity.sub(PVector.mult(up, speed));
 
 		velocity.mult(friction);
 		position.add(velocity);
